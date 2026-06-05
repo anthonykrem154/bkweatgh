@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Brooklyn Weather | Live NYC Forecast</title>
+<meta name="description" content="Check live Brooklyn weather, temperature, wind, rain, feels-like conditions, alerts, and a 5-day forecast for Brooklyn, New York.">
+<meta name="theme-color" content="#06121f">
+
+<link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+<link rel="icon" type="image/x-icon" href="favicon.png">
+<link rel="apple-touch-icon" href="favicon.png">
+
+<link rel="preconnect" href="https://api.open-meteo.com">
+<link rel="preconnect" href="https://images.ctfassets.net">
+<link rel="preload" as="image" href="https://images.ctfassets.net/1aemqu6a6t65/4bV6HSFbVMv7fk7hYLPTQF/f4e92af77d820eed565eb4317e166395/Boardwalk-Coney-Island-Brooklyn-NYC-Photo-Brittany-Petronella.jpg?fm=webp&w=1400&q=55" fetchpriority="high">
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+<div class="bg">
+  <img src="https://images.ctfassets.net/1aemqu6a6t65/4bV6HSFbVMv7fk7hYLPTQF/f4e92af77d820eed565eb4317e166395/Boardwalk-Coney-Island-Brooklyn-NYC-Photo-Brittany-Petronella.jpg?fm=webp&w=1400&q=55" alt="" aria-hidden="true" fetchpriority="high" width="1400" height="980">
+</div>
+<div class="overlay"></div>
+
+<nav aria-label="Main navigation">
+  <div class="nav-inner">
+    <a class="logo" href="#home" aria-label="BrooklynWeather Home">Brooklyn<span>Weather</span></a>
+
+    <div class="links">
+      <a href="#home">Home</a>
+      <a href="#forecast">Forecast</a>
+      <a href="#about">About</a>
+      <a href="#alerts">Alerts</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <section class="hero" id="home">
+    <div class="hero-content">
+      <div class="left">
+        <h1>Live Weather In <span>Brooklyn</span></h1>
+
+        <p>
+          Real Brooklyn weather, live conditions, 5-day forecast,
+          rain chance, wind speed, and temperature updates in one clean website.
+        </p>
+
+        <div class="hero-buttons">
+          <a href="#forecast" class="btn primary">View Forecast</a>
+          <a href="#alerts" class="btn secondary">Weather Alerts</a>
+        </div>
+      </div>
+
+      <section class="weather-card" aria-label="Current Brooklyn weather">
+        <div class="top">
+          <div>
+            <div class="city">Brooklyn, New York 🌆</div>
+            <div class="updated" id="updated">Loading live weather...</div>
+          </div>
+
+          <div class="live">LIVE</div>
+        </div>
+
+        <div class="big-temp" id="temp">--°F</div>
+        <div class="condition" id="condition">Loading...</div>
+        <div class="status" id="status">Getting Brooklyn weather data...</div>
+
+        <div class="stats">
+          <div class="stat">
+            <small>Humidity</small>
+            <div class="stat-value" id="humidity">--%</div>
+          </div>
+
+          <div class="stat">
+            <small>Wind</small>
+            <div class="stat-value" id="wind">-- MPH</div>
+          </div>
+
+          <div class="stat">
+            <small>Rain</small>
+            <div class="stat-value" id="rain">-- in</div>
+          </div>
+
+          <div class="stat">
+            <small>Feels Like</small>
+            <div class="stat-value" id="feels">--°F</div>
+          </div>
+        </div>
+
+        <button type="button" class="refresh-btn" id="refreshBtn" aria-label="Refresh Brooklyn weather">
+          Refresh Weather
+        </button>
+      </section>
+    </div>
+  </section>
+
+  <section class="section" id="forecast">
+    <h2 class="section-title">5-Day Forecast</h2>
+
+    <div class="forecast-grid" id="forecastGrid">
+      <article class="day">
+        <h3>Loading</h3>
+        <div class="icon" aria-hidden="true">🌤️</div>
+        <div class="day-temp">--° / --°</div>
+        <div class="day-desc">Please wait...</div>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" id="about">
+    <h2 class="section-title">Why Use BrooklynWeather?</h2>
+
+    <div class="info-grid">
+      <article class="info-card">
+        <h3>⚡ Real Data</h3>
+        <p>This website uses real forecast data instead of random fake numbers.</p>
+      </article>
+
+      <article class="info-card">
+        <h3>🌧 Rain Tracking</h3>
+        <p>See precipitation and weather conditions so you know if you need an umbrella.</p>
+      </article>
+
+      <article class="info-card">
+        <h3>📱 Mobile Friendly</h3>
+        <p>The layout works on phones, tablets, laptops, and desktop screens.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" id="alerts">
+    <h2 class="section-title">Weather Alerts</h2>
+
+    <div class="alert-box" id="alertBox">
+      Checking Brooklyn conditions...
+    </div>
+  </section>
+</main>
+
+<noscript>
+  <p class="noscript-msg">JavaScript is needed to load live Brooklyn weather data.</p>
+</noscript>
+
+<footer>
+  © 2026 BrooklynWeather — Modern NYC Forecast Experience — Anthonyswebsites.site
+</footer>
+
+<script src="app.js" defer></script>
+</body>
+</html>
