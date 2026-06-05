@@ -3,16 +3,20 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://api.open-meteo.com; img-src 'self' https://images.ctfassets.net data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; upgrade-insecure-requests;">
 
 <title>Brooklyn Weather | Live NYC Forecast</title>
 <meta name="description" content="Check live Brooklyn weather, temperature, wind, rain, feels-like conditions, alerts, and a 5-day forecast for Brooklyn, New York.">
 <meta name="theme-color" content="#06121f">
-<link rel="preconnect" href="https://api.open-meteo.com">
-<link rel="preconnect" href="https://images.ctfassets.net">
-<link rel="preload" as="image" href="https://images.ctfassets.net/1aemqu6a6t65/4bV6HSFbVMv7fk7hYLPTQF/f4e92af77d820eed565eb4317e166395/Boardwalk-Coney-Island-Brooklyn-NYC-Photo-Brittany-Petronella.jpg?fm=webp&w=1600&q=70" fetchpriority="high">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
   <link rel="icon" type="image/x-icon" href="favicon.png">
   <link rel="apple-touch-icon" href="favicon.png">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
 <style>
 *{
   margin:0;
@@ -24,18 +28,8 @@ html{
   scroll-behavior:smooth;
 }
 
-@media (prefers-reduced-motion: reduce){
-  html{
-    scroll-behavior:auto;
-  }
-
-  *{
-    transition:none !important;
-  }
-}
-
 body{
-  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
+  font-family:'Inter',sans-serif;
   background:#06121f;
   color:white;
   overflow-x:hidden;
@@ -44,16 +38,12 @@ body{
 .bg{
   position:fixed;
   inset:0;
+  background:
+    linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,.78)),
+    url('https://images.ctfassets.net/1aemqu6a6t65/4bV6HSFbVMv7fk7hYLPTQF/f4e92af77d820eed565eb4317e166395/Boardwalk-Coney-Island-Brooklyn-NYC-Photo-Brittany-Petronella.jpg');
+  background-size:cover;
+  background-position:center;
   z-index:-2;
-  overflow:hidden;
-}
-
-.bg img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  object-position:center;
-  filter:brightness(.45);
 }
 
 .overlay{
@@ -229,7 +219,6 @@ nav{
 .condition{
   font-size:1.3rem;
   color:#bae6fd;
-  min-height:1.7rem;
 }
 
 .status{
@@ -257,9 +246,8 @@ nav{
   margin-bottom:8px;
 }
 
-.stat h3{
+.stat .stat-value{
   font-size:1.35rem;
-  min-height:1.7rem;
 }
 
 .refresh-btn{
@@ -398,14 +386,6 @@ footer{
     display:none;
   }
 
-  .nav-inner{
-    padding:14px 16px;
-  }
-
-  .logo{
-    font-size:1.25rem;
-  }
-
   .left h1{
     font-size:3rem;
   }
@@ -435,10 +415,10 @@ footer{
 
 <body>
 
-<div class="bg"><img src="https://images.ctfassets.net/1aemqu6a6t65/4bV6HSFbVMv7fk7hYLPTQF/f4e92af77d820eed565eb4317e166395/Boardwalk-Coney-Island-Brooklyn-NYC-Photo-Brittany-Petronella.jpg?fm=webp&w=1600&q=70" alt="" aria-hidden="true" fetchpriority="high"></div>
+<div class="bg"></div>
 <div class="overlay"></div>
 
-<nav aria-label="Main navigation">
+<nav>
   <div class="nav-inner">
     <div class="logo">Brooklyn<span>Weather</span></div>
 
@@ -451,7 +431,6 @@ footer{
   </div>
 </nav>
 
-<main>
 <section class="hero" id="home">
   <div class="hero-content">
 
@@ -494,26 +473,26 @@ footer{
       <div class="stats">
         <div class="stat">
           <small>Humidity</small>
-          <h3 id="humidity">--%</h3>
+          <div class="stat-value" id="humidity">--%</div>
         </div>
 
         <div class="stat">
           <small>Wind</small>
-          <h3 id="wind">-- MPH</h3>
+          <div class="stat-value" id="wind">-- MPH</div>
         </div>
 
         <div class="stat">
           <small>Rain</small>
-          <h3 id="rain">-- in</h3>
+          <div class="stat-value" id="rain">-- in</div>
         </div>
 
         <div class="stat">
           <small>Feels Like</small>
-          <h3 id="feels">--°</h3>
+          <div class="stat-value" id="feels">--°</div>
         </div>
       </div>
 
-      <button type="button" class="refresh-btn" onclick="getWeather()" aria-label="Refresh Brooklyn weather">
+      <button class="refresh-btn" onclick="getWeather()">
         Refresh Weather
       </button>
     </div>
@@ -522,7 +501,7 @@ footer{
 </section>
 
 <section class="section" id="forecast">
-  <h2 class="section-title">5-Day Forecast</h2>
+  <h1 class="section-title">5-Day Forecast</h1>
 
   <div class="forecast-grid" id="forecastGrid">
     <div class="day">
@@ -535,7 +514,7 @@ footer{
 </section>
 
 <section class="section" id="about">
-  <h2 class="section-title">Why Use BrooklynWeather?</h2>
+  <h1 class="section-title">Why Use BrooklynWeather?</h1>
 
   <div class="info-grid">
     <div class="info-card">
@@ -562,13 +541,12 @@ footer{
 </section>
 
 <section class="section" id="alerts">
-  <h2 class="section-title">Weather Alerts</h2>
+  <h1 class="section-title">Weather Alerts</h1>
 
   <div class="alert-box" id="alertBox">
     Checking Brooklyn conditions...
   </div>
 </section>
-</main>
 
 <footer>
   © 2026 BrooklynWeather — Modern NYC Forecast Experience — Anthonyswebsites.site
@@ -576,7 +554,7 @@ footer{
 
 <script>
 const API_URL =
-  "https://api.open-meteo.com/v1/forecast?latitude=40.6782&longitude=-73.9442&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum&forecast_days=5&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=America%2FNew_York";
+  "https://api.open-meteo.com/v1/forecast?latitude=40.6782&longitude=-73.9442&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=America%2FNew_York";
 
 const weatherCodes = {
   0: ["☀️", "Clear Sky"],
@@ -638,14 +616,10 @@ async function getWeather(){
     const current = data.current;
     const daily = data.daily;
 
-    if(!current || !daily || !daily.time){
-      throw new Error("Missing weather data");
-    }
-
     const currentWeather = getWeatherIcon(current.weather_code);
 
     document.getElementById("temp").textContent =
-      Math.round(current.temperature_2m) + "°F";
+      Math.round(current.temperature_2m) + "°";
 
     document.getElementById("condition").textContent =
       currentWeather[0] + " " + currentWeather[1];
@@ -660,7 +634,7 @@ async function getWeather(){
       current.precipitation + " in";
 
     document.getElementById("feels").textContent =
-      Math.round(current.apparent_temperature) + "°F";
+      Math.round(current.apparent_temperature) + "°";
 
     document.getElementById("updated").textContent =
       "Updated: " + new Date(current.time).toLocaleString("en-US", {
@@ -729,10 +703,5 @@ async function getWeather(){
 getWeather();
 </script>
 
-<noscript>
-  <p style="padding:20px;text-align:center;background:#06121f;color:white;">
-    JavaScript is needed to load live Brooklyn weather data.
-  </p>
-</noscript>
 </body>
 </html>
