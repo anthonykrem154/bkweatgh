@@ -1,154 +1,857 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'self' https://api.open-meteo.com; img-src 'self' https://images.ctfassets.net data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; upgrade-insecure-requests;">
 
 <title>Brooklyn Weather | Live NYC Forecast</title>
 <meta name="description" content="Check live Brooklyn weather, temperature, wind, rain, feels-like conditions, alerts, and a 5-day forecast for Brooklyn, New York.">
 <meta name="theme-color" content="#06121f">
 
-<link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
-<link rel="icon" type="image/x-icon" href="favicon.png">
-<link rel="apple-touch-icon" href="favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon.png">
+  <link rel="icon" type="image/x-icon" href="favicon.png">
+  <link rel="apple-touch-icon" href="favicon.png">
 
-<link rel="preconnect" href="https://api.open-meteo.com">
-<link rel="preconnect" href="https://images.ctfassets.net">
-<link rel="preload" as="image" href="https://images.ctfassets.net/1aemqu6a6t65/4bV6HSFbVMv7fk7hYLPTQF/f4e92af77d820eed565eb4317e166395/Boardwalk-Coney-Island-Brooklyn-NYC-Photo-Brittany-Petronella.jpg?fm=webp&w=1400&q=55" fetchpriority="high">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
-<link rel="stylesheet" href="style.css">
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  font-family:'Inter',sans-serif;
+  background:#06121f;
+  color:white;
+  overflow-x:hidden;
+}
+
+.bg{
+  position:fixed;
+  inset:0;
+  background:
+    linear-gradient(rgba(0,0,0,.55),rgba(0,0,0,.78)),
+    url('https://images.ctfassets.net/1aemqu6a6t65/4bV6HSFbVMv7fk7hYLPTQF/f4e92af77d820eed565eb4317e166395/Boardwalk-Coney-Island-Brooklyn-NYC-Photo-Brittany-Petronella.jpg');
+  background-size:cover;
+  background-position:center;
+  z-index:-2;
+}
+
+.overlay{
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(circle at top,#38bdf833,transparent 40%),
+    radial-gradient(circle at bottom right,#0ea5e933,transparent 35%);
+  z-index:-1;
+}
+
+nav{
+  position:sticky;
+  top:0;
+  z-index:1000;
+  backdrop-filter:blur(14px);
+  background:rgba(3,7,18,.65);
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.nav-inner{
+  max-width:1250px;
+  margin:auto;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:18px 20px;
+}
+
+.logo{
+  font-size:1.5rem;
+  font-weight:800;
+  letter-spacing:.5px;
+}
+
+.logo span{
+  color:#38bdf8;
+}
+
+.links{
+  display:flex;
+  gap:25px;
+}
+
+.links a{
+  text-decoration:none;
+  color:white;
+  font-weight:500;
+  transition:.25s;
+}
+
+.links a:hover{
+  color:#38bdf8;
+}
+
+.hero{
+  min-height:92vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:40px 20px;
+}
+
+.hero-content{
+  width:100%;
+  max-width:1250px;
+  display:grid;
+  grid-template-columns:1.1fr .9fr;
+  gap:35px;
+  align-items:center;
+}
+
+.left h1{
+  font-size:5rem;
+  line-height:1;
+  font-weight:800;
+  margin-bottom:25px;
+}
+
+.left h1 span{
+  color:#38bdf8;
+}
+
+.left p{
+  color:#d1d5db;
+  font-size:1.1rem;
+  max-width:600px;
+  line-height:1.7;
+}
+
+.hero-buttons{
+  display:flex;
+  gap:15px;
+  margin-top:35px;
+  flex-wrap:wrap;
+}
+
+.btn{
+  display:inline-block;
+  text-decoration:none;
+  padding:16px 28px;
+  border-radius:999px;
+  border:none;
+  cursor:pointer;
+  font-size:1rem;
+  font-weight:700;
+  transition:.25s;
+}
+
+.primary{
+  background:#38bdf8;
+  color:#071827;
+  box-shadow:0 0 25px #38bdf855;
+}
+
+.primary:hover{
+  transform:translateY(-3px) scale(1.03);
+}
+
+.secondary{
+  background:rgba(255,255,255,.08);
+  color:white;
+  border:1px solid rgba(255,255,255,.15);
+}
+
+.secondary:hover{
+  background:rgba(255,255,255,.15);
+}
+
+.weather-card{
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:35px;
+  padding:35px;
+  backdrop-filter:blur(18px);
+  box-shadow:0 25px 80px rgba(0,0,0,.35);
+}
+
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin-bottom:25px;
+}
+
+.live{
+  background:#22c55e;
+  color:#02140a;
+  padding:8px 14px;
+  border-radius:999px;
+  font-size:.8rem;
+  font-weight:800;
+}
+
+.city{
+  font-size:1.1rem;
+  color:#dbeafe;
+}
+
+.updated{
+  margin-top:6px;
+  font-size:.85rem;
+  color:#94a3b8;
+}
+
+.big-temp{
+  font-size:6rem;
+  font-weight:800;
+  margin:10px 0;
+}
+
+.condition{
+  font-size:1.3rem;
+  color:#bae6fd;
+}
+
+.status{
+  margin-top:15px;
+  font-size:.95rem;
+  color:#cbd5e1;
+}
+
+.stats{
+  margin-top:30px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
+
+.stat{
+  background:rgba(255,255,255,.06);
+  border-radius:20px;
+  padding:18px;
+}
+
+.stat small{
+  color:#cbd5e1;
+  display:block;
+  margin-bottom:8px;
+}
+
+.stat .stat-value{
+  font-size:1.35rem;
+}
+
+.refresh-btn{
+  margin-top:25px;
+  width:100%;
+  padding:15px;
+  border:none;
+  border-radius:18px;
+  cursor:pointer;
+  background:#38bdf8;
+  color:#071827;
+  font-weight:800;
+  font-size:1rem;
+  transition:.25s;
+}
+
+.refresh-btn:hover{
+  transform:translateY(-3px);
+  box-shadow:0 0 20px #38bdf855;
+}
+
+.section{
+  max-width:1250px;
+  margin:auto;
+  padding:80px 20px;
+}
+
+.section-title{
+  font-size:2.5rem;
+  margin-bottom:35px;
+}
+
+.forecast-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:20px;
+}
+
+.day{
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:28px;
+  padding:25px;
+  text-align:center;
+  backdrop-filter:blur(12px);
+  transition:.25s;
+}
+
+.day:hover{
+  transform:translateY(-8px);
+  background:rgba(255,255,255,.12);
+}
+
+.day h2{
+  margin-bottom:15px;
+}
+
+.icon{
+  font-size:3rem;
+  margin:12px 0;
+}
+
+.day-temp{
+  font-size:1.1rem;
+  font-weight:700;
+}
+
+.day-desc{
+  margin-top:8px;
+  color:#cbd5e1;
+  font-size:.9rem;
+}
+
+.info-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:25px;
+}
+
+.info-card{
+  background:rgba(255,255,255,.07);
+  padding:30px;
+  border-radius:28px;
+  border:1px solid rgba(255,255,255,.08);
+  backdrop-filter:blur(12px);
+}
+
+.info-card h3{
+  margin-bottom:12px;
+  font-size:1.3rem;
+}
+
+.info-card p{
+  color:#d1d5db;
+  line-height:1.7;
+}
+
+.alert-box{
+  background:rgba(14,165,233,.12);
+  border:1px solid rgba(56,189,248,.25);
+  padding:30px;
+  border-radius:28px;
+  line-height:1.7;
+  color:#dbeafe;
+  backdrop-filter:blur(12px);
+}
+
+footer{
+  margin-top:80px;
+  border-top:1px solid rgba(255,255,255,.08);
+  padding:35px 20px;
+  text-align:center;
+  color:#94a3b8;
+}
+
+@media(max-width:1000px){
+  .hero-content{
+    grid-template-columns:1fr;
+  }
+
+  .left h1{
+    font-size:3.7rem;
+  }
+
+  .forecast-grid{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .info-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:600px){
+  .links{
+    display:none;
+  }
+
+  .left h1{
+    font-size:3rem;
+  }
+
+  .big-temp{
+    font-size:4.5rem;
+  }
+
+  .forecast-grid{
+    grid-template-columns:1fr;
+  }
+
+  .stats{
+    grid-template-columns:1fr;
+  }
+
+  .hero{
+    padding-top:25px;
+  }
+
+  .weather-card{
+    padding:25px;
+  }
+}
+
+.unit-toggle{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-left:20px;
+  padding:8px 12px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:999px;
+  background:rgba(255,255,255,.07);
+}
+
+.unit-label{
+  font-size:.85rem;
+  font-weight:800;
+  color:#cbd5e1;
+}
+
+.unit-label.active{
+  color:#38bdf8;
+}
+
+.switch{
+  position:relative;
+  width:48px;
+  height:26px;
+  display:inline-block;
+}
+
+.switch input{
+  opacity:0;
+  width:0;
+  height:0;
+}
+
+.slider{
+  position:absolute;
+  inset:0;
+  cursor:pointer;
+  background:rgba(255,255,255,.16);
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:999px;
+  transition:.25s;
+}
+
+.slider:before{
+  content:"";
+  position:absolute;
+  width:20px;
+  height:20px;
+  left:2px;
+  top:2px;
+  background:#38bdf8;
+  border-radius:50%;
+  transition:.25s;
+  box-shadow:0 0 12px #38bdf866;
+}
+
+.switch input:checked + .slider{
+  background:rgba(56,189,248,.2);
+}
+
+.switch input:checked + .slider:before{
+  transform:translateX(22px);
+}
+
+.nav-right{
+  display:flex;
+  align-items:center;
+  gap:20px;
+}
+
+@media(max-width:700px){
+  .nav-right{
+    gap:10px;
+  }
+
+  .unit-toggle{
+    margin-left:0;
+    padding:7px 9px;
+    gap:7px;
+  }
+
+  .unit-label{
+    font-size:.75rem;
+  }
+
+  .switch{
+    width:42px;
+    height:24px;
+  }
+
+  .slider:before{
+    width:18px;
+    height:18px;
+  }
+
+  .switch input:checked + .slider:before{
+    transform:translateX(18px);
+  }
+}
+
+</style>
 </head>
 
 <body>
-<div class="bg">
-  <img src="https://images.ctfassets.net/1aemqu6a6t65/4bV6HSFbVMv7fk7hYLPTQF/f4e92af77d820eed565eb4317e166395/Boardwalk-Coney-Island-Brooklyn-NYC-Photo-Brittany-Petronella.jpg?fm=webp&w=1400&q=55" alt="" aria-hidden="true" fetchpriority="high" width="1400" height="980">
-</div>
+
+<div class="bg"></div>
 <div class="overlay"></div>
 
-<nav aria-label="Main navigation">
+<nav>
   <div class="nav-inner">
-    <a class="logo" href="#home" aria-label="BrooklynWeather Home">Brooklyn<span>Weather</span></a>
+    <div class="logo">Brooklyn<span>Weather</span></div>
 
-    <div class="links">
-      <a href="#home">Home</a>
-      <a href="#forecast">Forecast</a>
-      <a href="#about">About</a>
-      <a href="#alerts">Alerts</a>
+    <div class="nav-right">
+      <div class="links">
+        <a href="#home">Home</a>
+        <a href="#forecast">Forecast</a>
+        <a href="#about">About</a>
+        <a href="#alerts">Alerts</a>
+      </div>
+
+      <div class="unit-toggle" aria-label="Temperature unit switch">
+        <span class="unit-label active" id="fahrenheitLabel">°F</span>
+        <label class="switch">
+          <input type="checkbox" id="unitSwitch" aria-label="Switch between Fahrenheit and Celsius">
+          <span class="slider"></span>
+        </label>
+        <span class="unit-label" id="celsiusLabel">°C</span>
+      </div>
     </div>
   </div>
 </nav>
 
-<main>
-  <section class="hero" id="home">
-    <div class="hero-content">
-      <div class="left">
-        <h1>Live Weather In <span>Brooklyn</span></h1>
+<section class="hero" id="home">
+  <div class="hero-content">
 
-        <p>
-          Real Brooklyn weather, live conditions, 5-day forecast,
-          rain chance, wind speed, and temperature updates in one clean website.
-        </p>
+    <div class="left">
+      <h1>
+        Live Weather In <span>Brooklyn</span>
+      </h1>
 
-        <div class="hero-buttons">
-          <a href="#forecast" class="btn primary">View Forecast</a>
-          <a href="#alerts" class="btn secondary">Weather Alerts</a>
+      <p>
+        Real Brooklyn weather, live conditions, 5-day forecast,
+        rain chance, wind speed, and temperature updates in one clean website.
+      </p>
+
+      <div class="hero-buttons">
+        <a href="#forecast" class="btn primary">View Forecast</a>
+        <a href="#alerts" class="btn secondary">Weather Alerts</a>
+      </div>
+    </div>
+
+    <div class="weather-card">
+      <div class="top">
+        <div>
+          <div class="city">Brooklyn, New York 🌆</div>
+          <div class="updated" id="updated">Loading live weather...</div>
+        </div>
+
+        <div class="live">LIVE</div>
+      </div>
+
+      <div class="big-temp" id="temp">--°</div>
+
+      <div class="condition" id="condition">
+        Loading...
+      </div>
+
+      <div class="status" id="status">
+        Getting Brooklyn weather data...
+      </div>
+
+      <div class="stats">
+        <div class="stat">
+          <small>Humidity</small>
+          <div class="stat-value" id="humidity">--%</div>
+        </div>
+
+        <div class="stat">
+          <small>Wind</small>
+          <div class="stat-value" id="wind">-- MPH</div>
+        </div>
+
+        <div class="stat">
+          <small>Rain</small>
+          <div class="stat-value" id="rain">-- in</div>
+        </div>
+
+        <div class="stat">
+          <small>Feels Like</small>
+          <div class="stat-value" id="feels">--°</div>
         </div>
       </div>
 
-      <section class="weather-card" aria-label="Current Brooklyn weather">
-        <div class="top">
-          <div>
-            <div class="city">Brooklyn, New York 🌆</div>
-            <div class="updated" id="updated">Loading live weather...</div>
-          </div>
-
-          <div class="live">LIVE</div>
-        </div>
-
-        <div class="big-temp" id="temp">--°F</div>
-        <div class="condition" id="condition">Loading...</div>
-        <div class="status" id="status">Getting Brooklyn weather data...</div>
-
-        <div class="stats">
-          <div class="stat">
-            <small>Humidity</small>
-            <div class="stat-value" id="humidity">--%</div>
-          </div>
-
-          <div class="stat">
-            <small>Wind</small>
-            <div class="stat-value" id="wind">-- MPH</div>
-          </div>
-
-          <div class="stat">
-            <small>Rain</small>
-            <div class="stat-value" id="rain">-- in</div>
-          </div>
-
-          <div class="stat">
-            <small>Feels Like</small>
-            <div class="stat-value" id="feels">--°F</div>
-          </div>
-        </div>
-
-        <button type="button" class="refresh-btn" id="refreshBtn" aria-label="Refresh Brooklyn weather">
-          Refresh Weather
-        </button>
-      </section>
+      <button class="refresh-btn" onclick="getWeather()">
+        Refresh Weather
+      </button>
     </div>
-  </section>
 
-  <section class="section" id="forecast">
-    <h2 class="section-title">5-Day Forecast</h2>
+  </div>
+</section>
 
-    <div class="forecast-grid" id="forecastGrid">
-      <article class="day">
-        <h3>Loading</h3>
-        <div class="icon" aria-hidden="true">🌤️</div>
-        <div class="day-temp">--° / --°</div>
-        <div class="day-desc">Please wait...</div>
-      </article>
+<section class="section" id="forecast">
+  <h1 class="section-title">5-Day Forecast</h1>
+
+  <div class="forecast-grid" id="forecastGrid">
+    <div class="day">
+      <h2>Loading</h2>
+      <div class="icon">🌤️</div>
+      <div class="day-temp">--° / --°</div>
+      <div class="day-desc">Please wait...</div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section class="section" id="about">
-    <h2 class="section-title">Why Use BrooklynWeather?</h2>
+<section class="section" id="about">
+  <h1 class="section-title">Why Use BrooklynWeather?</h1>
 
-    <div class="info-grid">
-      <article class="info-card">
-        <h3>⚡ Real Data</h3>
-        <p>This website uses real forecast data instead of random fake numbers.</p>
-      </article>
-
-      <article class="info-card">
-        <h3>🌧 Rain Tracking</h3>
-        <p>See precipitation and weather conditions so you know if you need an umbrella.</p>
-      </article>
-
-      <article class="info-card">
-        <h3>📱 Mobile Friendly</h3>
-        <p>The layout works on phones, tablets, laptops, and desktop screens.</p>
-      </article>
+  <div class="info-grid">
+    <div class="info-card">
+      <h3>⚡ Real Data</h3>
+      <p>
+        This website uses real forecast data instead of random fake numbers.
+      </p>
     </div>
-  </section>
 
-  <section class="section" id="alerts">
-    <h2 class="section-title">Weather Alerts</h2>
-
-    <div class="alert-box" id="alertBox">
-      Checking Brooklyn conditions...
+    <div class="info-card">
+      <h3>🌧 Rain Tracking</h3>
+      <p>
+        See precipitation and weather conditions so you know if you need an umbrella.
+      </p>
     </div>
-  </section>
-</main>
 
-<noscript>
-  <p class="noscript-msg">JavaScript is needed to load live Brooklyn weather data.</p>
-</noscript>
+    <div class="info-card">
+      <h3>📱 Mobile Friendly</h3>
+      <p>
+        The layout works on phones, tablets, laptops, and desktop screens.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="alerts">
+  <h1 class="section-title">Weather Alerts</h1>
+
+  <div class="alert-box" id="alertBox">
+    Checking Brooklyn conditions...
+  </div>
+</section>
 
 <footer>
   © 2026 BrooklynWeather — Modern NYC Forecast Experience — Anthonyswebsites.site
 </footer>
 
-<script src="app.js" defer></script>
+<script>
+const API_URL =
+  "https://api.open-meteo.com/v1/forecast?latitude=40.6782&longitude=-73.9442&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=America%2FNew_York";
+
+let weatherData = null;
+let currentUnit = localStorage.getItem("weatherUnit") || "F";
+
+const weatherCodes = {
+  0: ["☀️", "Clear Sky"],
+  1: ["🌤️", "Mainly Clear"],
+  2: ["⛅", "Partly Cloudy"],
+  3: ["☁️", "Cloudy"],
+  45: ["🌫️", "Foggy"],
+  48: ["🌫️", "Foggy"],
+  51: ["🌦️", "Light Drizzle"],
+  53: ["🌦️", "Drizzle"],
+  55: ["🌧️", "Heavy Drizzle"],
+  61: ["🌧️", "Light Rain"],
+  63: ["🌧️", "Rain"],
+  65: ["🌧️", "Heavy Rain"],
+  71: ["🌨️", "Light Snow"],
+  73: ["🌨️", "Snow"],
+  75: ["❄️", "Heavy Snow"],
+  80: ["🌦️", "Rain Showers"],
+  81: ["🌧️", "Rain Showers"],
+  82: ["⛈️", "Heavy Showers"],
+  95: ["⛈️", "Thunderstorm"],
+  96: ["⛈️", "Thunderstorm"],
+  99: ["⛈️", "Severe Thunderstorm"]
+};
+
+function getWeatherIcon(code){
+  return weatherCodes[code] || ["🌤️", "Weather Update"];
+}
+
+function getDayName(dateString){
+  const date = new Date(dateString + "T12:00:00");
+  return date.toLocaleDateString("en-US", { weekday: "short" });
+}
+
+function getFullDate(dateString){
+  const date = new Date(dateString + "T12:00:00");
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric"
+  });
+}
+
+function toCelsius(fahrenheit){
+  return (fahrenheit - 32) * 5 / 9;
+}
+
+function formatTemp(fahrenheit){
+  if(currentUnit === "C"){
+    return Math.round(toCelsius(fahrenheit)) + "°C";
+  }
+
+  return Math.round(fahrenheit) + "°F";
+}
+
+function updateUnitUI(){
+  const unitSwitch = document.getElementById("unitSwitch");
+  const fahrenheitLabel = document.getElementById("fahrenheitLabel");
+  const celsiusLabel = document.getElementById("celsiusLabel");
+
+  if(unitSwitch){
+    unitSwitch.checked = currentUnit === "C";
+  }
+
+  if(fahrenheitLabel && celsiusLabel){
+    fahrenheitLabel.classList.toggle("active", currentUnit === "F");
+    celsiusLabel.classList.toggle("active", currentUnit === "C");
+  }
+}
+
+function renderWeather(){
+  if(!weatherData){
+    return;
+  }
+
+  const current = weatherData.current;
+  const daily = weatherData.daily;
+  const currentWeather = getWeatherIcon(current.weather_code);
+
+  document.getElementById("temp").textContent = formatTemp(current.temperature_2m);
+  document.getElementById("condition").textContent = currentWeather[0] + " " + currentWeather[1];
+  document.getElementById("humidity").textContent = current.relative_humidity_2m + "%";
+  document.getElementById("wind").textContent = Math.round(current.wind_speed_10m) + " MPH";
+  document.getElementById("rain").textContent = current.precipitation + " in";
+  document.getElementById("feels").textContent = formatTemp(current.apparent_temperature);
+
+  document.getElementById("updated").textContent =
+    "Updated: " + new Date(current.time).toLocaleString("en-US", {
+      month:"short",
+      day:"numeric",
+      hour:"numeric",
+      minute:"2-digit"
+    });
+
+  document.getElementById("status").textContent = "Live Brooklyn weather loaded successfully.";
+
+  const forecastGrid = document.getElementById("forecastGrid");
+  forecastGrid.innerHTML = "";
+
+  for(let i = 0; i < 5; i++){
+    const weather = getWeatherIcon(daily.weather_code[i]);
+    const max = daily.temperature_2m_max[i];
+    const min = daily.temperature_2m_min[i];
+    const rain = daily.precipitation_sum[i];
+
+    forecastGrid.innerHTML += `
+      <div class="day">
+        <h2>${getDayName(daily.time[i])}</h2>
+        <p>${getFullDate(daily.time[i])}</p>
+        <div class="icon">${weather[0]}</div>
+        <div class="day-temp">${formatTemp(max)} / ${formatTemp(min)}</div>
+        <div class="day-desc">${weather[1]}</div>
+        <div class="day-desc">Rain: ${rain} in</div>
+      </div>
+    `;
+  }
+
+  const rainToday = daily.precipitation_sum[0];
+  const windNow = current.wind_speed_10m;
+  const codeNow = current.weather_code;
+  const alertBox = document.getElementById("alertBox");
+
+  if(codeNow >= 95){
+    alertBox.textContent = "⛈️ Thunderstorm conditions are possible in Brooklyn. Stay safe and check local alerts.";
+  } else if(rainToday > 0.1){
+    alertBox.textContent = "🌧️ Rain is possible today in Brooklyn. Bring an umbrella.";
+  } else if(windNow > 20){
+    alertBox.textContent = "💨 It is windy in Brooklyn today. Be careful outside.";
+  } else {
+    alertBox.textContent = "✅ No major weather alert right now for Brooklyn.";
+  }
+}
+
+async function getWeather(){
+  const status = document.getElementById("status");
+  const alertBox = document.getElementById("alertBox");
+
+  try{
+    status.textContent = "Updating weather...";
+    alertBox.textContent = "Checking Brooklyn conditions...";
+
+    const response = await fetch(API_URL);
+
+    if(!response.ok){
+      throw new Error("Weather API failed");
+    }
+
+    const data = await response.json();
+
+    if(!data.current || !data.daily){
+      throw new Error("Missing weather data");
+    }
+
+    weatherData = data;
+    renderWeather();
+
+  } catch(error){
+    console.log(error);
+
+    status.textContent = "Could not load live weather. Check your internet or try again.";
+    alertBox.textContent = "Weather data is not loading right now.";
+    document.getElementById("condition").textContent = "Weather unavailable";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+  const unitSwitch = document.getElementById("unitSwitch");
+
+  updateUnitUI();
+
+  if(unitSwitch){
+    unitSwitch.addEventListener("change", function(){
+      currentUnit = unitSwitch.checked ? "C" : "F";
+      localStorage.setItem("weatherUnit", currentUnit);
+      updateUnitUI();
+      renderWeather();
+    });
+  }
+
+  getWeather();
+});
+</script>
+
 </body>
 </html>
